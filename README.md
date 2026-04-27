@@ -1,85 +1,169 @@
-# ECON3916-33674-Statistical-Machine-Learning-Final-Project
-# 📊 ML Prediction Project – Netflix User Behavior
+# ECON3916-33674-Statistical-Machine-Learning-Final-Project  
+# 📊 ML Prediction Project – Netflix User Behavior  
 
-## 📌 Overview
+## 📌 Overview  
 
-This project explores whether user watch time can be predicted using basic demographic and preference-related features. The goal is to apply a simple machine learning workflow, including data exploration and baseline modeling.
+This project explores whether user watch time can be predicted using basic demographic and preference-related features. The goal is to apply a standard machine learning workflow, including exploratory data analysis, baseline modeling, and model evaluation.
 
----
-
-## 🎯 Prediction Question
-
-Can we predict how many hours a user spends watching content based on features such as age, country, subscription type, and favorite genre?
+More importantly, this project investigates a deeper question:  
+> What happens when the data itself contains little to no predictive signal?
 
 ---
 
-## 📂 Dataset
+## 🎯 Prediction Question  
 
-* Source: Kaggle – Netflix Users Database
-* Observations (N): 25,000
-* Features: 6 variables (excluding ID)
-* Target: `Watch_Time_Hours`
+Can we predict how many hours a user spends watching content based on features such as:  
+- Age  
+- Country  
+- Subscription type  
+- Favorite genre  
 
----
-
-## 🔍 Exploratory Data Analysis (EDA)
-
-### Key Findings:
-
-* The target variable (watch time) is continuous and spread across a wide range.
-* The dataset contains no missing values and no detected outliers.
-* Correlation analysis shows almost no linear relationship between age and watch time.
-* No strong relationships were found between individual features and the target variable.
-
-These results suggest that predicting watch time may be challenging using the available features.
+Target variable: `Watch_Time_Hours` (continuous → regression problem)
 
 ---
 
-## 🤖 Models Implemented
+## 📂 Dataset  
 
-### Model 1: Linear Regression (Baseline)
-
-A simple linear regression model was used as a baseline.
-
-* RMSE: ~285
-* MAE: ~245
-* R²: ≈ 0
-
-The model predicts values close to the mean, indicating that it does not capture meaningful patterns in the data.
+- Source: Kaggle – Netflix Users Database  
+- Observations (N): 25,000  
+- Features used: Age, Country, Subscription_Type, Favorite_Genre  
+- Dropped:
+  - `User_ID` (identifier, no information)
+  - `Last_Login` (timestamp not meaningful in this context)
 
 ---
 
-### Model 2: Random Forest Regressor
+## 🔍 Exploratory Data Analysis (EDA)  
 
-A Random Forest model was applied to explore whether a more flexible model could improve performance.
+### Key Findings  
 
-Compared to linear regression, this model introduces more variation in predictions, but overall predictive performance remains limited.
+- No missing values (0%)  
+- No outliers detected (IQR method)  
+- Target variable is continuous with a wide range  
+- Correlation analysis:  
+  - |Pearson r| < 0.02 for all features  
+- Mutual information ≈ 0 → no nonlinear signal  
 
----
+### Interpretation  
 
-## 📈 Model Insights
+All diagnostics consistently indicate:
 
-* The linear model fails to capture any meaningful relationship between features and watch time.
-* The Random Forest model shows slight improvement but does not significantly enhance prediction accuracy.
-* Visualization of predicted vs actual values confirms that the models struggle to fit the data.
+> The features contain almost **no predictive information** about watch time.
 
----
-
-## 💡 Key Takeaway
-
-The results suggest that watch time is difficult to predict using the current set of features. Both EDA and model performance indicate weak relationships between inputs and the target variable. This implies that additional or more informative features would likely be needed to improve prediction accuracy.
-
----
-
-## 🛠️ Tools Used
-
-* Python
-* Pandas
-* Scikit-learn
-* Matplotlib / Seaborn
+This is highly unusual for real-world behavioral data and suggests that the dataset may be **synthetically generated**, where the target variable is effectively independent of the features.
 
 ---
 
-## 📌 Note
+## 🤖 Models Implemented  
 
-This project focuses on demonstrating the modeling workflow and interpreting results, rather than achieving high predictive performance.
+### Model 1: Linear Regression (Baseline)  
+
+- RMSE: ~285  
+- MAE: ~245  
+- R²: ≈ 0  
+
+➡️ Interpretation:  
+The model predicts values very close to the mean. It explains **0% of the variance**, indicating no linear relationship between features and the target.
+
+---
+
+### Model 2: Random Forest Regressor  
+
+- Train R²: high (~0.8+)  
+- Test R²: ≈ 0 or negative  
+- CV R²: ≈ 0  
+
+➡️ Interpretation:  
+- Strong performance on training data  
+- Poor performance on test data  
+
+This is a classic case of **overfitting**:  
+> The model memorizes noise rather than learning a generalizable pattern.
+
+---
+
+## 📈 Model Insights  
+
+- Both models perform nearly identically on unseen data  
+- Predictions cluster around a constant value (the mean)  
+- No model captures meaningful variation in watch time  
+
+From visualization (actual vs predicted):  
+- Points do **not align with the 45° line**  
+- Instead, predictions form a horizontal band  
+
+➡️ Conclusion:  
+> The failure is not due to model choice, but due to lack of signal in the data.
+
+---
+
+## 💡 Key Takeaway  
+
+This project highlights a fundamental principle in machine learning:
+
+> **Model performance is limited by data quality, not algorithm complexity.**
+
+Even flexible models like Random Forest cannot extract signal when:
+- Features are weak or irrelevant  
+- Target variable is independent of inputs  
+
+---
+
+## 📊 Business Interpretation  
+
+### ❌ Why Prediction Fails  
+
+Using only:
+- Demographics  
+- Subscription type  
+- Stated preferences  
+
+➡️ Cannot explain real user behavior  
+
+Watch time is driven by:
+- Dynamic behavior (daily usage patterns)  
+- Contextual factors (time, mood, habits)  
+
+---
+
+### ✅ What Would Improve the Model  
+
+To make this problem meaningful:
+
+**1. Add behavioral features**
+- Session frequency  
+- Viewing completion rate  
+- Time-of-day activity  
+- Clickstream / interaction logs  
+
+**2. Reframe the problem**
+Instead of predicting exact hours:
+
+➡️ Use classification or ranking  
+- High vs low engagement users  
+- Retention targeting  
+
+---
+
+## ⚠️ Limitations  
+
+- Dataset likely synthetic  
+- No real behavioral signal  
+- Results may not generalize to real platforms  
+
+---
+
+## 🛠️ Tools Used  
+
+- Python  
+- Pandas  
+- Scikit-learn  
+- Matplotlib / Seaborn  
+
+---
+
+## 📌 Final Note  
+
+This project focuses not on achieving high accuracy, but on correctly diagnosing **why models fail**.
+
+> Understanding when a model *should not work* is just as important as making one work.
